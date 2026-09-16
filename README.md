@@ -215,7 +215,7 @@ netflix-discovery-ai/
     ├── test_gemini.py
     └── test_recommender.py
 Installation
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/Shashank-d404/netflix-discovery-ai.git
 cd netflix-discovery-ai
 python3 -m venv .venv
 source .venv/bin/activate
