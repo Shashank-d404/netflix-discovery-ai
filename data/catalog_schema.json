@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CatalogDataset",
+  "description": "Schema for Netflix Discovery AI local content catalog",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "title",
+      "type",
+      "release_year",
+      "genres",
+      "language",
+      "moods",
+      "tags",
+      "duration_minutes",
+      "duration_display",
+      "rating",
+      "synopsis",
+      "poster_gradient",
+      "featured_cast"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^(mov|ser)-[0-9]{3}$",
+        "description": "Unique identifier prefixed with mov- for movies and ser- for series"
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Title of the movie or series"
+      },
+      "type": {
+        "type": "string",
+        "enum": ["Movie", "Series"],
+        "description": "Content classification: Movie or Series"
+      },
+      "release_year": {
+        "type": "integer",
+        "minimum": 1950,
+        "maximum": 2030,
+        "description": "Year of original release"
+      },
+      "genres": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1,
+        "description": "List of primary genres"
+      },
+      "language": {
+        "type": "string",
+        "description": "Primary audio language"
+      },
+      "moods": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1,
+        "description": "Atmospheric mood tags representing the viewing vibe"
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Thematic keywords for search and semantic matching"
+      },
+      "duration_minutes": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Runtime in minutes (for series, representative episode runtime)"
+      },
+      "duration_display": {
+        "type": "string",
+        "description": "Human-readable runtime or season/episode count"
+      },
+      "rating": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "description": "Critic or viewer rating on a 0 to 10 scale"
+      },
+      "synopsis": {
+        "type": "string",
+        "minLength": 10,
+        "description": "Brief plot summary"
+      },
+      "poster_gradient": {
+        "type": "string",
+        "description": "CSS linear gradient descriptor for UI card presentation"
+      },
+      "featured_cast": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Key actors or creators"
+      }
+    },
+    "additionalProperties": false
+  }
+}

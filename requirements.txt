@@ -1,0 +1,11 @@
+# Web Framework
+Flask>=3.0.0
+
+# Environment Variable Management
+python-dotenv>=1.0.0
+
+# Google Gemini API SDK
+google-genai>=0.1.0
+
+# Testing Framework
+pytest>=8.0.0
