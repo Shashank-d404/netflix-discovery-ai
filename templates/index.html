@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NETFLIX — The Discovery Problem | AI-Powered Content Discovery</title>
+  <meta name="description" content="AI-Powered Personalized Content Discovery System prototype for CSE project submission. Solves streaming catalog fatigue using deterministic ranking and Google Gemini.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-badge" aria-hidden="true">AI</div>
+        <div class="brand-text">
+          <h1 class="brand-title">DISCOVERY<span class="brand-accent">AI</span></h1>
+          <span class="brand-subtitle">Personalized Streaming Intelligence</span>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="badge-student">CSE Project Prototype</span>
+        <div id="aiStatusPill" class="status-pill status-checking" title="Checking AI Engine Status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="aiStatusText">Checking AI Engine...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- Hero & Problem Statement -->
+    <section class="hero-section" aria-labelledby="heroHeading">
+      <div class="hero-content">
+        <span class="hero-pill">NxtWave CSE Project Submission</span>
+        <h2 id="heroHeading" class="hero-title">NETFLIX — The Discovery Problem</h2>
+        <p class="hero-description">
+          Viewers spend an average of 18 minutes browsing before choosing what to watch.
+          <strong>Discovery AI</strong> solves "choice overload" by converting natural-language viewing desires
+          into structured preferences, scored against a verified catalog using a
+          <strong>100% transparent, deterministic 100-point ranking algorithm</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Interactive Discovery Console -->
+    <section class="console-section" aria-label="Discovery Console">
+      <div class="console-card">
+        <!-- Input Mode Tabs -->
+        <div class="mode-tabs" role="tablist" aria-label="Input Mode">
+          <button id="tabNatural" class="tab-btn active" role="tab" aria-selected="true" aria-controls="panelNatural">
+            <span class="tab-icon">✨</span> Natural-Language Prompt
+          </button>
+          <button id="tabStructured" class="tab-btn" role="tab" aria-selected="false" aria-controls="panelStructured">
+            <span class="tab-icon">⚙️</span> Structured Filters
+          </button>
+        </div>
+
+        <!-- Panel 1: Natural Language Discovery -->
+        <div id="panelNatural" class="tab-panel active" role="tabpanel" aria-labelledby="tabNatural">
+          <form id="naturalForm" class="discovery-form">
+            <div class="form-group">
+              <label for="naturalQueryInput" class="form-label">
+                <span>Describe what you want to watch</span>
+                <span class="label-hint">Plain English — mood, genre, language, duration</span>
+              </label>
+              <div class="textarea-wrapper">
+                <textarea
+                  id="naturalQueryInput"
+                  class="natural-input"
+                  rows="3"
+                  placeholder="e.g., I want a dark sci-fi thriller in English, preferably a movie under two hours..."
+                  required
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Sample Prompt Chips -->
+            <div class="prompt-chips-wrapper">
+              <span class="chips-label">Try sample queries:</span>
+              <div class="chips-list">
+                <button type="button" class="chip-btn" data-query="I want a dark sci-fi thriller in English, preferably a movie under two hours">
+                  🌌 Dark sci-fi movie &lt; 2 hrs
+                </button>
+                <button type="button" class="chip-btn" data-query="Looking for a heartwarming comedy series in Hindi">
+                  😄 Feel-good Hindi series
+                </button>
+                <button type="button" class="chip-btn" data-query="A quick animated film under 90 minutes that is heartwarming">
+                  🎨 Quick animation &lt; 90m
+                </button>
+                <button type="button" class="chip-btn" data-query="Mind-bending mystery or psychological thriller with high tension">
+                  🧠 Mind-bending mystery
+                </button>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <div class="limit-selector">
+                <label for="naturalTopN" class="sub-label">Return Top:</label>
+                <select id="naturalTopN" class="select-dropdown">
+                  <option value="3">Top 3</option>
+                  <option value="5" selected>Top 5</option>
+                  <option value="10">Top 10</option>
+                </select>
+              </div>
+              <button type="submit" id="btnDiscoverNatural" class="btn-primary">
+                <span class="btn-text">Discover Recommendations</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Panel 2: Structured Catalog Filters -->
+        <div id="panelStructured" class="tab-panel" role="tabpanel" aria-labelledby="tabStructured" hidden>
+          <form id="structuredForm" class="discovery-form">
+            <div class="filter-grid">
+              <!-- Content Type -->
+              <div class="form-group">
+                <label for="filterContentType" class="form-label">Content Type</label>
+                <select id="filterContentType" class="select-dropdown">
+                  <option value="Any">All Types (Movie & Series)</option>
+                  <option value="Movie">Movie</option>
+                  <option value="Series">Series</option>
+                </select>
+              </div>
+
+              <!-- Language -->
+              <div class="form-group">
+                <label for="filterLanguage" class="form-label">Language</label>
+                <select id="filterLanguage" class="select-dropdown">
+                  <option value="Any">Any Language</option>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <!-- Duration Preset -->
+              <div class="form-group">
+                <label for="filterDuration" class="form-label">Duration Limit</label>
+                <select id="filterDuration" class="select-dropdown">
+                  <option value="">Any Duration</option>
+                  <option value="90">Quick Watch (≤ 90 mins)</option>
+                  <option value="120">Standard Watch (≤ 120 mins)</option>
+                  <option value="150">Extended Watch (≤ 150 mins)</option>
+                </select>
+              </div>
+
+              <!-- Return Limit -->
+              <div class="form-group">
+                <label for="structuredTopN" class="form-label">Return Top</label>
+                <select id="structuredTopN" class="select-dropdown">
+                  <option value="3">Top 3</option>
+                  <option value="5" selected>Top 5</option>
+                  <option value="10">Top 10</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Genres Checkboxes -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Preferred Genres</span>
+                <span class="label-hint">Select one or more</span>
+              </label>
+              <div id="genresContainer" class="checkbox-chips-grid">
+                <!-- Dynamically populated -->
+                <span class="loading-subtext">Loading genres...</span>
+              </div>
+            </div>
+
+            <!-- Moods Checkboxes -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Viewing Vibe / Mood</span>
+                <span class="label-hint">Select atmosphere</span>
+              </label>
+              <div id="moodsContainer" class="checkbox-chips-grid">
+                <!-- Dynamically populated -->
+                <span class="loading-subtext">Loading moods...</span>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button type="button" id="btnResetFilters" class="btn-secondary">
+                Reset Filters
+              </button>
+              <button type="submit" id="btnDiscoverStructured" class="btn-primary">
+                <span class="btn-text">Apply & Recommend</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feedback / Notifications Banner -->
+    <div id="alertBanner" class="alert-banner" role="alert" aria-live="assertive" hidden>
+      <span class="alert-icon" aria-hidden="true">⚠️</span>
+      <span id="alertMessage" class="alert-text"></span>
+      <button type="button" id="alertClose" class="alert-close" aria-label="Dismiss alert">&times;</button>
+    </div>
+
+    <!-- Extraction Audit Card (Shown after Natural Query) -->
+    <section id="extractionAuditSection" class="audit-section" aria-label="AI Interpretation Summary" hidden>
+      <div class="audit-card">
+        <div class="audit-header">
+          <div class="audit-title-group">
+            <span class="audit-icon">🔍</span>
+            <h3 class="audit-title">Preference Understanding & Extraction</h3>
+          </div>
+          <div id="auditModeBadge" class="audit-badge badge-gemini">
+            <span class="badge-dot"></span>
+            <span id="auditModeText">Gemini AI Active</span>
+          </div>
+        </div>
+
+        <p id="auditQueryEcho" class="audit-query"></p>
+
+        <div class="audit-entities" id="auditEntitiesContainer">
+          <!-- Populated by JS -->
+        </div>
+
+        <p id="auditFallbackNotice" class="audit-fallback-notice" hidden>
+          <strong>Notice:</strong> <span id="auditFallbackReasonText"></span>
+        </p>
+      </div>
+    </section>
+
+    <!-- Recommendations Results Section -->
+    <section id="resultsSection" class="results-section" aria-label="Recommended Content">
+      <div class="results-header">
+        <div class="results-title-group">
+          <h3 id="resultsHeading" class="results-title">Personalized Recommendations</h3>
+          <span id="resultsCountBadge" class="results-count-badge" hidden>0 titles</span>
+        </div>
+        <p class="results-subtitle">
+          Ranked strictly from our catalog using our explainable 100-point algorithm.
+        </p>
+      </div>
+
+      <!-- Initial / Empty State -->
+      <div id="initialState" class="state-card">
+        <div class="state-icon">🎬</div>
+        <h4 class="state-title">Ready to Discover</h4>
+        <p class="state-desc">
+          Enter a natural-language description above or select structured filters to see titles ranked by genre, mood, duration, and quality.
+        </p>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="state-card" hidden>
+        <div class="spinner" aria-hidden="true"></div>
+        <h4 class="state-title">Analyzing Catalog & Scoring Matches...</h4>
+        <p class="state-desc">Evaluating multi-factor compatibility across all titles.</p>
+      </div>
+
+      <!-- No Results State -->
+      <div id="noResultsState" class="state-card" hidden>
+        <div class="state-icon">🔎</div>
+        <h4 class="state-title">No Strong Matches Found</h4>
+        <p class="state-desc">
+          Try relaxing your duration constraints or broadening your selected genres.
+        </p>
+      </div>
+
+      <!-- Results Grid -->
+      <div id="recommendationsGrid" class="recommendations-grid" hidden>
+        <!-- Cards inserted dynamically -->
+      </div>
+    </section>
+
+    <!-- Architecture & How It Works -->
+    <section class="how-it-works-section" aria-labelledby="howItWorksHeading">
+      <div class="section-container">
+        <h3 id="howItWorksHeading" class="section-title">How Discovery AI Works</h3>
+        <p class="section-subtitle">
+          A hybrid architecture uniting Generative AI intent parsing with deterministic catalog ranking.
+        </p>
+
+        <div class="pipeline-grid">
+          <div class="pipeline-step">
+            <div class="step-num">1</div>
+            <div class="step-icon">💬</div>
+            <h4 class="step-title">User Preferences</h4>
+            <p class="step-desc">Accepts unstructured free-text or structured filter inputs.</p>
+          </div>
+
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+
+          <div class="pipeline-step">
+            <div class="step-num">2</div>
+            <div class="step-icon">🤖</div>
+            <h4 class="step-title">AI Extraction</h4>
+            <p class="step-desc">Gemini extracts intent into verified catalog taxonomies.</p>
+          </div>
+
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+
+          <div class="pipeline-step">
+            <div class="step-num">3</div>
+            <div class="step-icon">📚</div>
+            <h4 class="step-title">Catalog Grounding</h4>
+            <p class="step-desc">Candidates are strictly drawn from local curated catalog.</p>
+          </div>
+
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+
+          <div class="pipeline-step">
+            <div class="step-num">4</div>
+            <div class="step-icon">⚖️</div>
+            <h4 class="step-title">Deterministic Ranking</h4>
+            <p class="step-desc">100-pt Python scoring formula evaluates exact compatibility.</p>
+          </div>
+
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+
+          <div class="pipeline-step">
+            <div class="step-num">5</div>
+            <div class="step-icon">🎯</div>
+            <h4 class="step-title">Personalized Results</h4>
+            <p class="step-desc">Returns ranked titles with 100% transparent score breakdowns.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Transparency & Academic Disclosure -->
+    <section class="transparency-section" aria-labelledby="transparencyHeading">
+      <div class="transparency-card">
+        <div class="transparency-header">
+          <span class="transparency-badge">AI Transparency</span>
+          <h3 id="transparencyHeading" class="transparency-title">Generative AI vs. Deterministic Ranking</h3>
+        </div>
+        <div class="transparency-body">
+          <p>
+            In this prototype, <strong>Google Gemini is never used to hallucinate or invent movie titles</strong>.
+            The language model is strictly confined to interpreting user natural language and normalizing preferences.
+            All ranking and candidate selections are computed deterministically by the Python backend against our local verified dataset.
+          </p>
+          <div class="scoring-formula-card">
+            <h4 class="formula-title">100-Point Scoring Model:</h4>
+            <ul class="formula-list">
+              <li><strong>Genre Match (35 pts):</strong> Overlap ratio between requested and catalog genres</li>
+              <li><strong>Mood &amp; Tags (25 pts):</strong> Emotional vibe and thematic tag alignment</li>
+              <li><strong>Language Match (15 pts):</strong> Audio language compatibility</li>
+              <li><strong>Content Type (10 pts):</strong> Movie vs. Series alignment</li>
+              <li><strong>Duration Compatibility (10 pts):</strong> Graceful penalty for runtimes over preferred limit</li>
+              <li><strong>Quality Rating Boost (5 pts):</strong> Critic/audience rating tie-breaker</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Score Breakdown Modal -->
+  <div id="scoreModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge" id="modalTypeBadge">Movie</span>
+          <h3 id="modalTitle" class="modal-title">Title Here</h3>
+        </div>
+        <button type="button" id="modalCloseBtn" class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-score-summary">
+          <div class="modal-score-circle">
+            <span id="modalTotalScore" class="score-large">94.2</span>
+            <span class="score-unit">/ 100</span>
+          </div>
+          <div class="modal-score-meta">
+            <h4 class="meta-label">Overall Compatibility Score</h4>
+            <p id="modalMatchSummary" class="meta-desc">Matches your requested genre, mood, and duration.</p>
+          </div>
+        </div>
+
+        <h4 class="breakdown-heading">Factor-by-Factor Breakdown</h4>
+        <div id="modalBreakdownList" class="breakdown-list">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="reasons-card">
+          <h5 class="reasons-heading">Matched Attributes</h5>
+          <div id="modalMatchedReasons" class="reasons-chips">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="modalDismissBtn" class="btn-secondary">Close Breakdown</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p class="footer-academic">
+        <strong>Academic Project:</strong> First-Semester CSE Project for NxtWave Submission.
+      </p>
+      <p class="footer-disclaimer">
+        Inspired by the <em>Netflix Discovery Problem</em>. This is an educational student prototype and is not affiliated with, sponsored by, or an official product of Netflix, Inc. No copyrighted media assets are used.
+      </p>
+      <p class="footer-stack">
+        Stack: Python 3.13 • Flask • Google Gemini API • Semantic HTML5 • CSS3 • Vanilla JS
+      </p>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
