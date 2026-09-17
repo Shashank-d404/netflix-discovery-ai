@@ -2,8 +2,6 @@
 ## 🚀 Live Demo
 
 🌐 **[Open Netflix Discovery AI](https://netflix-discovery-ai.onrender.com)**
-
-> The application is deployed on Render as an academic/student project prototype.
 > **NETFLIX — The Discovery Problem**
 
 A student-built AI project prototype that addresses streaming-platform catalog fatigue by combining natural-language preference extraction with a deterministic, catalog-grounded recommendation engine.
