@@ -9,3 +9,4 @@ google-genai>=0.1.0
 
 # Testing Framework
 pytest>=8.0.0
+gunicorn>=23.0.0
